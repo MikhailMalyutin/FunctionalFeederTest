@@ -1,5 +1,5 @@
-import ru.msm.conceptsexprector {
-    subscribe,
+import ru.msm.conceptsextractor {
+    subscribeFeedsAndConcepts,
     Concept,
     text
 }
@@ -10,14 +10,15 @@ import ceylon.collection {
 {Concept*} enrich({Concept*} initial, Integer size) {
     value result = ArrayList<Concept>();
     value sorted = initial.sort( (c1, c2) => c1.startPosition <=> c2.startPosition);
-    value res -> lastPosition = sorted.fold(result -> 0)( ( enrichedData -> lastPosition, currentConcept) {
-        if(currentConcept.startPosition > lastPosition) {
-            enrichedData.add(Concept(lastPosition, currentConcept.startPosition, text));
-        }
-        enrichedData.add(currentConcept);
-        value newCounter = currentConcept.endPositiom;
-        return enrichedData -> newCounter;
-    });
+    value res -> lastPosition = sorted.fold(result -> 0)(
+        (enrichedData -> lastPosition, currentConcept) {
+           if(currentConcept.startPosition > lastPosition) {
+               enrichedData.add(Concept(lastPosition, currentConcept.startPosition, text));
+           }
+           enrichedData.add(currentConcept);
+           value newCounter = currentConcept.endPositiom;
+           return enrichedData -> newCounter;
+        });
     if (size > lastPosition) {
         res.add(Concept(lastPosition, size, text));
     }
@@ -34,5 +35,5 @@ String format(String str, {Concept*} concept) {
 }
 
 shared {String*} subsccribeFormatted() {
-    return subscribe.map( (str -> concept) => format(str, concept));
+    return subscribeFeedsAndConcepts.map( (str -> concept) => format(str, concept));
 }

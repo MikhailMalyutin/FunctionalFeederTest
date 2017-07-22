@@ -26,7 +26,7 @@ shared class Concept(
             shared ConceptType conceptType
         ) {}
 
-shared {<String->{Concept*}>*} subscribe
+shared {<String->{Concept*}>*} subscribeFeedsAndConcepts
     => subscribeNews.map((news)
         => news -> {
                        Concept(14, 22, entity),
