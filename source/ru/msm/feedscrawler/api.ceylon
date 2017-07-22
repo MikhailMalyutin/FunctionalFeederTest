@@ -1,0 +1,1 @@
+shared {String*} subscribeNews => {"""Obama visited Facebook headquarters: http://bit.ly/xyz @elversatile"""};
