@@ -12,11 +12,12 @@ shared object entity satisfies ConceptType {
     shared actual String format(String conceptData) => "<strong>``conceptData``</strong>";
 }
 shared object link satisfies ConceptType {
-    shared actual String format(String conceptData) => "<a href=\"``conceptData``\">``conceptData``</a>";
+    shared actual String format(String conceptData) => "<a href=\"``conceptData``\">``conceptData`` </a>";
 }
 shared object twitterUsername satisfies ConceptType {
     shared actual String format(String conceptData)
-            => "<a href=\"http://twitter.com/``conceptData``\">``conceptData``</a>";
+            => let ( username = conceptData.substring(1) )
+               "@ <a href=\"http://twitter.com/``username``\">``username``</a>";
 }
 
 shared class Concept(
