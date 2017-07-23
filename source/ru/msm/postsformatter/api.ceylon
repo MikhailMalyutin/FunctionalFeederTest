@@ -1,10 +1,29 @@
 import ru.msm.conceptsextractor {
     subscribeFeedsAndConcepts,
     Concept,
-    text
+    text,
+    OOPApiContextExtractor
 }
 import ceylon.collection {
     ArrayList
+}
+
+shared {String*} subsccribeFormatted() {
+    return subscribeFeedsAndConcepts.map( (str -> concept) => format(str, concept));
+}
+
+shared class OOPApiFormattedNews(OOPApiContextExtractor contextExtractor) {
+    shared String|Finished nextFormattedNews() {
+        value newsWithConceptsOrFinished = contextExtractor.nextNewsWithConcepts();
+        if (is Finished newsWithConceptsOrFinished) {
+            return newsWithConceptsOrFinished;
+        }
+        value newsText = newsWithConceptsOrFinished.news;
+        value enrichedConcepts = enrich(
+            newsWithConceptsOrFinished.concepts,
+            newsText.size);
+        return format(newsText, enrichedConcepts);
+    }
 }
 
 {Concept*} enrich({Concept*} initial, Integer size) {
@@ -26,14 +45,10 @@ import ceylon.collection {
     return res;
 }
 
-String format(String str, {Concept*} concept) {
-    return "".join(enrich(concept, str.size)
+String format(String str, {Concept*} enrichedConcepts) {
+    return "".join(enrich(enrichedConcepts, str.size)
         .map( (c)
           => let (content = str.substring(c.startPosition, c.endPositiom))
              c.conceptType.format(content)
             ));
-}
-
-shared {String*} subsccribeFormatted() {
-    return subscribeFeedsAndConcepts.map( (str -> concept) => format(str, concept));
 }
