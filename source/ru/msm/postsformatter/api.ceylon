@@ -2,7 +2,11 @@ import ru.msm.conceptsextractor {
     subscribeFeedsAndConcepts,
     Concept,
     text,
-    OOPApiContextExtractor
+    OOPApiContextExtractor,
+    ConceptType,
+    entity,
+    twitterUsername,
+    link
 }
 import ceylon.collection {
     ArrayList
@@ -24,6 +28,16 @@ shared class OOPApiFormattedNews(OOPApiContextExtractor contextExtractor) {
             newsText.size);
         return format(newsText, enrichedConcepts);
     }
+}
+
+String formatConcept(String conceptData, ConceptType conceptType) {
+    return
+        switch(conceptType)
+        case (entity) "<strong>``conceptData``</strong>"
+        case (link) "<a href=\"``conceptData``\">``conceptData`` </a>"
+        case (twitterUsername) let ( username = conceptData.substring(1) )
+                                "@ <a href=\"http://twitter.com/``username``\">``username``</a>"
+        case (text) conceptData;
 }
 
 {Concept*} enrich({Concept*} initial, Integer size) {
@@ -49,6 +63,6 @@ String format(String str, {Concept*} enrichedConcepts) {
     return "".join(enrich(enrichedConcepts, str.size)
         .map( (c)
           => let (content = str.substring(c.startPosition, c.endPositiom))
-             c.conceptType.format(content)
+             formatConcept(content, c.conceptType)
             ));
 }
